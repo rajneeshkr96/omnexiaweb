@@ -1,3 +1,4 @@
+import "dotenv/config";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -16,6 +17,7 @@ const transporter = nodemailer.createTransport({
 // Verify connection on server start
 transporter.verify((error, success) => {
   if (error) {
+    console.log(process.env.EMAIL_USER,process.env.EMAIL_PASS,"user..........")
     console.error("❌ Email server error:", error);
   } else {
     console.log("✅ Email server is ready to send messages");

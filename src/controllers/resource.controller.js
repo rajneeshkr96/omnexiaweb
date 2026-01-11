@@ -3,19 +3,19 @@ import ApplicationCounter from "../models/ApplicationCounter.js";
 import JobOpening from "../models/JobOpening.js";
 import ContactSubmission from "../models/ContactSubmission.js";
 import JobApplication from "../models/JobApplication.js";
-import nodemailer from "nodemailer";
 import Certificate from "../models/Certificate.js";
 import path from "path";
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+import  transporter  from "../utils/mailer.js";
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
 
 
-export default transporter;
+// export default transporter;
 
 const MODELS = {
   user: User,
@@ -83,6 +83,10 @@ export const deleteOne = async (req, res) => {
 export const submitContactForm = async (req, res) => {
   try {
     const data = req.body;
+    if(!data.email){
+      return res.status(400).json({ error: "Email is required" });
+    } 
+    console.log("object")
 
     // 1. Save to DB
     const submission = await ContactSubmission.create(data);
