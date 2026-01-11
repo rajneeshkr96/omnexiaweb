@@ -3,7 +3,11 @@ import ContactSubmission from "../models/ContactSubmission.js";
 import upload from "../middleware/upload.js";
 import generateApplicationId from "../utils/generateApplicationId.js";
 import JobApplication from "../models/JobApplication.js";
+import transporter from "../utils/mailer.js";
+import  getContactEmailTemplate  from "../utils/templete.js";
 const router = express.Router();
+
+
 
 router.post("/contact", async (req, res) => {
   try {
@@ -23,12 +27,19 @@ router.post(
   async (req, res) => {
     try {
       const applicationId = await generateApplicationId();
-
+      
       const record = await JobApplication.create({
         applicationId,
         ...req.body,
         resume: req.file?.path,
       });
+      
+      await transporter.sendMail({
+      from: `"Omnixia Technology" <${process.env.EMAIL_USER}>`,
+      to: record.email,
+      subject: `Request Received: ${applicationId}`, // It's good practice to put the ID in the subject too
+      html: getContactEmailTemplate(record.firstName, applicationId),
+    });
       res.status(201).json({
         message: "Application submitted successfully",
         applicationId,
